@@ -1,6 +1,7 @@
 package ru.geekbrains.junior.hw_240126.task2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,56 +42,33 @@ public class Cart<T extends Food> {
      */
     public void cardBalancing()
     {
-        boolean proteins = false;
-        boolean fats = false;
-        boolean carbohydrates = false;
+        Boolean[] pfc = {foodstuffs.stream().anyMatch(Food::getProteins),
+                        foodstuffs.stream().anyMatch(Food::getFats),
+                        foodstuffs.stream().anyMatch(Food::getCarbohydrates)};
 
-        for (var food : foodstuffs)
-        {
-            if (!proteins && food.getProteins())
-                proteins = true;
-            else
-            if (!fats && food.getFats())
-                fats = true;
-            else
-            if (!carbohydrates && food.getCarbohydrates())
-                carbohydrates = true;
-            if (proteins && fats && carbohydrates)
-                break;
-        }
-
-        if (proteins && fats && carbohydrates)
-        {
+        if (Arrays.stream(pfc).allMatch(i -> i)) {
             System.out.println("Корзина уже сбалансирована по БЖУ.");
-            return;
+        } else {
+            market.getThings(clazz).forEach(thing -> {
+                if (!pfc[0] && thing.getProteins()) {
+                    pfc[0] = true;
+                    foodstuffs.add(thing);
+                }
+                if (!pfc[1] && thing.getFats()) {
+                    pfc[1] = true;
+                    foodstuffs.add(thing);
+                }
+                if (!pfc[2] && thing.getCarbohydrates()) {
+                    pfc[2] = true;
+                    foodstuffs.add(thing);
+                }
+            });
+
+            if (Arrays.stream(pfc).allMatch(i -> i))
+                System.out.println("Корзина сбалансирована по БЖУ.");
+            else
+                System.out.println("Невозможно сбалансировать корзину по БЖУ.");
         }
-
-        for (var thing : market.getThings(clazz))
-        {
-            if (!proteins && thing.getProteins())
-            {
-                proteins = true;
-                foodstuffs.add(thing);
-            }
-            else if (!fats && thing.getFats())
-            {
-                fats = true;
-                foodstuffs.add(thing);
-            }
-            else if (!carbohydrates && thing.getCarbohydrates())
-            {
-                carbohydrates = true;
-                foodstuffs.add(thing);
-            }
-            if (proteins && fats && carbohydrates)
-                break;
-        }
-
-        if (proteins && fats && carbohydrates)
-            System.out.println("Корзина сбалансирована по БЖУ.");
-        else
-            System.out.println("Невозможно сбалансировать корзину по БЖУ.");
-
     }
 
     public Collection<T> getFoodstuffs() {
