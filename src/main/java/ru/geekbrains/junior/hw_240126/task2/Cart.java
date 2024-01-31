@@ -43,23 +43,20 @@ public class Cart<T extends Food> {
     public void cardBalancing()
     {
         Boolean[] pfc = {foodstuffs.stream().anyMatch(Food::getProteins),
-                        foodstuffs.stream().anyMatch(Food::getFats),
-                        foodstuffs.stream().anyMatch(Food::getCarbohydrates)};
+                foodstuffs.stream().anyMatch(Food::getFats),
+                foodstuffs.stream().anyMatch(Food::getCarbohydrates)};
         if (Arrays.stream(pfc).allMatch(i -> i))
             System.out.println("Корзина уже сбалансирована по БЖУ.");
         else {
-            if (!pfc[0]) {
-                foodstuffs.add(market.getThings(clazz).stream().filter(Food::getProteins).findAny().get());
-                pfc[0] = true;
-            }
-            if (!pfc[1]) {
-                foodstuffs.add(market.getThings(clazz).stream().filter(Food::getFats).findAny().get());
-                pfc[1] = true;
-            }
-            if (!pfc[2]) {
-                foodstuffs.add(market.getThings(clazz).stream().filter(Food::getCarbohydrates).findFirst().get());
-                pfc[2] = true;
-            }
+            if (!pfc[0])
+                market.getThings(clazz).stream().filter(Food::getProteins).findAny()
+                        .ifPresentOrElse(v->{foodstuffs.add(v); pfc[0] = true;}, () -> pfc[0] = false);
+            if (!pfc[1])
+                market.getThings(clazz).stream().filter(Food::getFats).findAny()
+                        .ifPresentOrElse(v->{foodstuffs.add(v); pfc[1] = true;}, () -> pfc[1] = false);
+            if (!pfc[2])
+                market.getThings(clazz).stream().filter(Food::getCarbohydrates).findAny()
+                        .ifPresentOrElse(v->{foodstuffs.add(v); pfc[2] = true;}, () -> pfc[2] = false);
             if (Arrays.stream(pfc).allMatch(i -> i))
                 System.out.println("Корзина сбалансирована по БЖУ.");
             else
